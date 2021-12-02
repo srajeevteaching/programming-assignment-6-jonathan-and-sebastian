@@ -32,7 +32,7 @@ def list_data(filename):
     try:
         posts = open(filename, "r")
         # Tracks line
-        line_counter = 0
+        line_counter = 1
         for line in posts:
             # Converts each line to a list of its proper type
             try:
@@ -64,7 +64,7 @@ def list_data(filename):
             # Will run if the line is not of the correct type
             except ValueError:
                 pass
-                print("Value not accepted, line", (line_counter + 1), "will be skipped!")
+                print("Line", line_counter,  "will be skipped! Value not accepted.")
         # Closes the file given by the user
         posts.close()
     # Will run if the file given by the user is not found
@@ -74,5 +74,78 @@ def list_data(filename):
     return data
 
 
-facebook_data_list = list_data("facebook.csv")
-print(facebook_data_list)
+def save_file(filename, data_list):
+    # Opens/Creates a new file with the name given by the user
+    with open(filename, "w") as file:
+        for line in data_list:
+            for element in line:
+                # Writes each element in the list and separates it by semi-colon until the list finishes
+                file.write(str(element) + ";")
+            file.write("\n")
+
+
+def find_difference(data_list):
+    new_list = []
+    # Loops through the data list
+    for i in range(len(data_list)):
+        temp_list = []
+        # Finding the difference between likes and shares if likes is greater or equal to shares
+        if data_list[likes] > data_list[shares]:
+            current_post_difference = data_list[i][likes] - data_list[i][shares]
+            temp_list.append(current_post_difference)
+            if current_post_difference <= 25:
+                change = "the same"
+                temp_list.append(change)
+            elif 25 < current_post_difference < 100:
+                change = "more likes"
+                temp_list.append(change)
+            elif current_post_difference >= 100:
+                change = "significantly more likes"
+                temp_list.append(change)
+        else:
+            # Finding the difference between likes and shares if shares is greater than likes
+            current_post_difference = data_list[shares] - data_list[likes]
+            temp_list.append(current_post_difference)
+            if current_post_difference <= 25:
+                change = "the same"
+                temp_list.append(change)
+            elif 25 < current_post_difference < 100:
+                change = "more shares"
+                temp_list.append(change)
+            elif current_post_difference >= 100:
+                change = "significantly more shares"
+                temp_list.append(change)
+        new_list.append(temp_list)
+    return new_list
+
+
+def main():
+    continue_program = True
+    while continue_program:
+        # Loading Data From User File
+        file_input = input("Enter Name of File: ")
+        print("Opening File...")
+        facebook_data_list = list_data("facebook.csv")
+        # print(facebook_data_list)
+        # Listing Program Options
+        print("\nChoose From The Following: 'Find Differences', 'Graph', 'Avg Likes Post Type', 'Most Popular Day'")
+        program_option = input("Program Option: ").lower().strip()
+        # First Program Option, Finding Difference Between Likes and Shares
+        if program_option == "find differences":
+            # Creating List of List of Differences
+            difference_list = find_difference(facebook_data_list)
+            # print(difference_list)
+            # Getting User Input For The Name Of The File Where This Data Will Be Saved
+            new_file_name = input("Please Enter File Name Of Where You Would Like To Write or Save Data: ")
+            # Saving The File With the List of List of Differences
+            save_file(new_file_name, difference_list)
+            print("Done! A new file named,", new_file_name, "was created!")
+            # Asking User To Continue Or End Program
+            continue_choice = input("\nWould you like to run this program again or end (choices: 'again' or 'end'): ")
+            continue_choice = continue_choice.lower().strip()
+            if continue_choice != "again":
+                print("Ending Program...")
+                continue_program = False
+
+
+main()
