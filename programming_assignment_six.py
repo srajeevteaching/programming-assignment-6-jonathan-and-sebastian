@@ -1,8 +1,9 @@
-# Team Members: Jonathan Ramos
+# Team Members: Jonathan, Sebastian
 # Course: CS151, Dr. Rajeev
 # Programming Assignment: 6
 # Program Inputs:
 # Program Outputs:
+import matplotlib.pyplot as plt
 
 # All index values
 page_total_likes = 0
@@ -119,6 +120,39 @@ def find_difference(data_list):
     return new_list
 
 
+def create_graph_data(data_list):
+    engaged_users = []
+    low_users = 0
+    moderate_users = 0
+    high_users = 0
+    for i in range(len(data_list)):
+        engaged_users.append(data_list[i][lifetime_engaged_users])
+    print(engaged_users)
+    for j in range(len(engaged_users)):
+        if engaged_users[j] < 100:
+            low_users += 1
+        elif 100 <= engaged_users[j] <= 400:
+            moderate_users += 1
+        elif engaged_users[j] > 400:
+            high_users += 1
+    list_of_engaged_user_count = [low_users, moderate_users, high_users]
+    return list_of_engaged_user_count
+
+
+def posts_dictionary(data_list):
+    word_list = []
+    for i in range(len(data_list)):
+        word_list.append(data_list[i][type_of_post])
+
+    posts_count = {}
+    for word in word_list:
+        if word in posts_count:
+            posts_count[word] += 1
+        else:
+            posts_count[word] = 1
+    return posts_count
+
+
 def main():
     continue_program = True
     while continue_program:
@@ -128,7 +162,7 @@ def main():
         facebook_data_list = list_data("facebook.csv")
         # print(facebook_data_list)
         # Listing Program Options
-        print("\nChoose From The Following: 'Find Differences', 'Graph', 'Avg Likes Post Type', 'Most Popular Day'")
+        print("\nChoose From The Following: 'Find Differences', 'Graph', 'Avg Likes', 'Most Popular Day'")
         program_option = input("Program Option: ").lower().strip()
         # First Program Option, Finding Difference Between Likes and Shares
         if program_option == "find differences":
@@ -141,6 +175,69 @@ def main():
             save_file(new_file_name, difference_list)
             print("Done! A new file named,", new_file_name, "was created!")
             # Asking User To Continue Or End Program
+            continue_choice = input("\nWould you like to run this program again or end (choices: 'again' or 'end'): ")
+            continue_choice = continue_choice.lower().strip()
+            if continue_choice != "again":
+                print("Ending Program...")
+                continue_program = False
+
+        elif program_option == "graph":
+            graph_data = create_graph_data(facebook_data_list)
+            x = ["Low", "Moderate", "High"]
+            y = [graph_data[0], graph_data[1], graph_data[2]]
+            plt.bar(x, y)
+            plt.xlabel("Amount Of Engaged Users")
+            plt.ylabel("Number Of Posts")
+            print("Ending Program...Graph of posts with low, moderate, and high numbers of engaged users was created!")
+            plt.show()
+            break
+
+        elif program_option == "avg likes":
+            list_of_likes = [0, 0, 0, 0]
+            list_of_averages = []
+            count_photo = 0
+            count_status = 0
+            count_link = 0
+            count_video = 0
+
+            for i in range(len(facebook_data_list)):
+                if facebook_data_list[i][type_of_post] == "Photo":
+                    list_of_likes[0] += facebook_data_list[i][likes]
+                    count_photo += 1
+                elif facebook_data_list[i][type_of_post] == "Status":
+                    list_of_likes[1] += facebook_data_list[i][likes]
+                    count_status += 1
+                elif facebook_data_list[i][type_of_post] == "Link":
+                    list_of_likes[2] += facebook_data_list[i][likes]
+                    count_link += 1
+                elif facebook_data_list[i][type_of_post] == "Video":
+                    list_of_likes[3] += facebook_data_list[i][likes]
+                    count_video += 1
+
+            try:
+                list_of_averages.append(round(list_of_likes[0] / count_photo, 2))
+                list_of_averages.append(round(list_of_likes[1] / count_status, 2))
+                list_of_averages.append(round(list_of_likes[2] / count_link, 2))
+                list_of_averages.append(round(list_of_likes[3] / count_video, 2))
+            except ZeroDivisionError:
+                print("There Was An Error Finding The Average, Division By 0 Not Allowed.")
+
+            print("\nPhoto Posts Average Amount Of Likes:", list_of_averages[0])
+            print("Status Posts Average Amount Of Likes:", list_of_averages[1])
+            print("Link Posts Average Amount Of Likes:", list_of_averages[2])
+            print("Video Posts Average Amount Of Likes:", list_of_averages[3])
+
+            highest_likes = max(list_of_averages)
+            highest_likes_index = list_of_averages.index(highest_likes)
+            if highest_likes_index == 0:
+                print("\nThe Post Type With The Highest Amount Of Likes on Average: Photos")
+            elif highest_likes_index == 1:
+                print("\nThe Post Type With The Highest Amount Of Likes on Average: Status")
+            elif highest_likes_index == 2:
+                print("\nThe Post Type With The Highest Amount Of Likes on Average: Link")
+            if highest_likes_index == 3:
+                print("\nThe Post Type With The Highest Amount Of Likes on Average: Video")
+
             continue_choice = input("\nWould you like to run this program again or end (choices: 'again' or 'end'): ")
             continue_choice = continue_choice.lower().strip()
             if continue_choice != "again":
