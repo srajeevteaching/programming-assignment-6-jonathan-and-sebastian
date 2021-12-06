@@ -159,7 +159,7 @@ def main():
         # Loading Data From User File
         file_input = input("Enter Name of File: ")
         print("Opening File...")
-        facebook_data_list = list_data("facebook.csv")
+        facebook_data_list = list_data(file_input)
         # print(facebook_data_list)
         # Listing Program Options
         print("\nChoose From The Following: 'Find Differences', 'Graph', 'Avg Likes', 'Most Popular Day'")
