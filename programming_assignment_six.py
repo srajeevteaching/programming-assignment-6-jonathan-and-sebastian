@@ -1,8 +1,8 @@
 # Team Members: Jonathan, Sebastian
 # Course: CS151, Dr. Rajeev
 # Programming Assignment: 6
-# Program Inputs:
-# Program Outputs:
+# Program Inputs: Data file name, name of file where new data will be saved, user program choice, user choice to re-run
+# Program Outputs: New file using user given name, creates a graph, finds average likes, finds most popular day to post
 import matplotlib.pyplot as plt
 
 # All index values
