@@ -86,11 +86,12 @@ def save_file(filename, data_list):
 
 
 def find_difference(data_list):
-    new_list = []
+    # Uncomment to use other method of saving file (only saves the difference and the amount of difference)
+    # new_list = []
     # Loops through the data list
     for i in range(len(data_list)):
         temp_list = []
-        # Finding the difference between likes and shares if likes is greater or equal to shares
+        # Finding the difference between likes and shares if likes is greater than shares
         if data_list[likes] > data_list[shares]:
             current_post_difference = data_list[i][likes] - data_list[i][shares]
             temp_list.append(current_post_difference)
@@ -104,7 +105,7 @@ def find_difference(data_list):
                 change = "significantly more likes"
                 temp_list.append(change)
         else:
-            # Finding the difference between likes and shares if shares is greater than likes
+            # Finding the difference between likes and shares if shares is greater or equal to likes
             current_post_difference = data_list[shares] - data_list[likes]
             temp_list.append(current_post_difference)
             if current_post_difference <= 25:
@@ -116,8 +117,13 @@ def find_difference(data_list):
             elif current_post_difference >= 100:
                 change = "significantly more shares"
                 temp_list.append(change)
-        new_list.append(temp_list)
-    return new_list
+
+        # Use to make a list of only the difference in likes or shares
+        # new_list.append(temp_list)
+
+        # Use to make list of all data including difference in likes or shares
+        data_list[i].extend(temp_list)
+    return data_list
 
 
 def create_graph_data(data_list):
@@ -127,7 +133,7 @@ def create_graph_data(data_list):
     high_users = 0
     for i in range(len(data_list)):
         engaged_users.append(data_list[i][lifetime_engaged_users])
-    print(engaged_users)
+    # print(engaged_users)
     for j in range(len(engaged_users)):
         if engaged_users[j] < 100:
             low_users += 1
@@ -139,10 +145,10 @@ def create_graph_data(data_list):
     return list_of_engaged_user_count
 
 
-def posts_dictionary(data_list):
+def count_dictionary(data_list, index_value):
     word_list = []
     for i in range(len(data_list)):
-        word_list.append(data_list[i][type_of_post])
+        word_list.append(data_list[i][index_value])
 
     posts_count = {}
     for word in word_list:
@@ -154,14 +160,14 @@ def posts_dictionary(data_list):
 
 
 def main():
+    # Loading Data From User File
+    file_input = input("Enter Name of File: ")
+    print("Opening File...")
+    facebook_data_list = list_data(file_input)
+    # print(facebook_data_list)
+
     continue_program = True
     while continue_program:
-        # Loading Data From User File
-        file_input = input("Enter Name of File: ")
-        print("Opening File...")
-        facebook_data_list = list_data(file_input)
-        # print(facebook_data_list)
-        # Listing Program Options
         print("\nChoose From The Following: 'Find Differences', 'Graph', 'Avg Likes', 'Most Popular Day'")
         program_option = input("Program Option: ").lower().strip()
         # First Program Option, Finding Difference Between Likes and Shares
@@ -188,7 +194,11 @@ def main():
             plt.bar(x, y)
             plt.xlabel("Amount Of Engaged Users")
             plt.ylabel("Number Of Posts")
-            print("Ending Program...Graph of posts with low, moderate, and high numbers of engaged users was created!")
+            print("\nA Low Amount Of Engaged Users Is When A Post Has Less Than 100 Users")
+            print("A Moderate Amount Of Engaged Users Is When A Post Has Between 100 To 400 Users")
+            print("A High Amount Of Engaged Users Is When A Post Has More Than 400 Users")
+            print("\nGraph of posts with low, moderate, and high numbers of engaged users was created!")
+            print("Ending Program...")
             plt.show()
             break
 
@@ -219,26 +229,55 @@ def main():
                 list_of_averages.append(round(list_of_likes[1] / count_status, 2))
                 list_of_averages.append(round(list_of_likes[2] / count_link, 2))
                 list_of_averages.append(round(list_of_likes[3] / count_video, 2))
+
+                print("\nAverage Amount Of Likes For Photos:", list_of_averages[0])
+                print("Average Amount Of Likes For Status:", list_of_averages[1])
+                print("Average Amount Of Likes For Links:", list_of_averages[2])
+                print("Average Amount Of Likes For Videos:", list_of_averages[3])
+
+                highest_likes = max(list_of_averages)
+                highest_likes_index = list_of_averages.index(highest_likes)
+                if highest_likes_index == 0:
+                    print("\nThe Post Type With The Highest Amount Of Likes on Average: Photos")
+                elif highest_likes_index == 1:
+                    print("\nThe Post Type With The Highest Amount Of Likes on Average: Status")
+                elif highest_likes_index == 2:
+                    print("\nThe Post Type With The Highest Amount Of Likes on Average: Link")
+                if highest_likes_index == 3:
+                    print("\nThe Post Type With The Highest Amount Of Likes on Average: Video")
+
             except ZeroDivisionError:
                 print("There Was An Error Finding The Average, Division By 0 Not Allowed.")
 
-            print("\nPhoto Posts Average Amount Of Likes:", list_of_averages[0])
-            print("Status Posts Average Amount Of Likes:", list_of_averages[1])
-            print("Link Posts Average Amount Of Likes:", list_of_averages[2])
-            print("Video Posts Average Amount Of Likes:", list_of_averages[3])
+            continue_choice = input("\nWould you like to run this program again or end (choices: 'again' or 'end'): ")
+            continue_choice = continue_choice.lower().strip()
+            if continue_choice != "again":
+                print("Ending Program...")
+                continue_program = False
 
-            highest_likes = max(list_of_averages)
-            highest_likes_index = list_of_averages.index(highest_likes)
-            if highest_likes_index == 0:
-                print("\nThe Post Type With The Highest Amount Of Likes on Average: Photos")
-            elif highest_likes_index == 1:
-                print("\nThe Post Type With The Highest Amount Of Likes on Average: Status")
-            elif highest_likes_index == 2:
-                print("\nThe Post Type With The Highest Amount Of Likes on Average: Link")
-            if highest_likes_index == 3:
-                print("\nThe Post Type With The Highest Amount Of Likes on Average: Video")
+        elif program_option == "most popular day":
+            weekdays_dictionary = {1: "Monday", 2: "Tuesday", 3: "Wednesday", 4: "Thursday", 5: "Friday", 6: "Saturday", 7: "Sunday"}
+            weekday_count = count_dictionary(facebook_data_list, post_weekday)
+            # print(weekday_count)
+
+            inverse_dictionary_list = [(value, key) for key, value in weekday_count.items()]
+            # print(inverse_dictionary_list)
+            # print(max(inverse_dictionary_list)[1])
+
+            most_popular_key = max(inverse_dictionary_list)[1]
+            count_of_posts_on_day = max(inverse_dictionary_list)[0]
+            print("\nThe Most Popular Day To Post On Facebook Is:", weekdays_dictionary[most_popular_key])
+            print("This Day Had A Total Of", count_of_posts_on_day, "Posts!")
 
             continue_choice = input("\nWould you like to run this program again or end (choices: 'again' or 'end'): ")
+            continue_choice = continue_choice.lower().strip()
+            if continue_choice != "again":
+                print("Ending Program...")
+                continue_program = False
+        else:
+            print("\nInvalid Program Option!")
+
+            continue_choice = input("Would you like to run this program again or end (choices: 'again' or 'end'): ")
             continue_choice = continue_choice.lower().strip()
             if continue_choice != "again":
                 print("Ending Program...")
