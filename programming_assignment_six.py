@@ -146,15 +146,20 @@ def create_graph_data(data_list):
 
 
 def count_dictionary(data_list, index_value):
+    # Creates a list of all the values from the datalist at a chosen index
     word_list = []
     for i in range(len(data_list)):
         word_list.append(data_list[i][index_value])
-
+    # Creating an empty dictionary which will store all words and the count of times the word occurs in the list
     posts_count = {}
+    # Loops through the list of all words
     for word in word_list:
+        # Checks to see if the current word of the word list matches any key in the dictionary
         if word in posts_count:
+            # If the word is already in the dictionary then it adds one more to the count
             posts_count[word] += 1
         else:
+            # If the word is not in the dictionary, it creates the key and begins its count with 1
             posts_count[word] = 1
     return posts_count
 
@@ -203,13 +208,16 @@ def main():
             break
 
         elif program_option == "avg likes":
+            # List keeps count of how many likes each type of post has
             list_of_likes = [0, 0, 0, 0]
+            # List used to store the averages each type of post has
             list_of_averages = []
+            # Keeps track of how many times a post of that type is counted
             count_photo = 0
             count_status = 0
             count_link = 0
             count_video = 0
-
+            # Loops through the created list of all the data, storing the count of post and its total likes to a list
             for i in range(len(facebook_data_list)):
                 if facebook_data_list[i][type_of_post] == "Photo":
                     list_of_likes[0] += facebook_data_list[i][likes]
@@ -225,6 +233,7 @@ def main():
                     count_video += 1
 
             try:
+                # Adding to a list; the calculated rounded average of likes each type of post has
                 list_of_averages.append(round(list_of_likes[0] / count_photo, 2))
                 list_of_averages.append(round(list_of_likes[1] / count_status, 2))
                 list_of_averages.append(round(list_of_likes[2] / count_link, 2))
@@ -248,7 +257,7 @@ def main():
 
             except ZeroDivisionError:
                 print("There Was An Error Finding The Average, Division By 0 Not Allowed.")
-
+            # Gives the user the option to end the program or re run the program
             continue_choice = input("\nWould you like to run this program again or end (choices: 'again' or 'end'): ")
             continue_choice = continue_choice.lower().strip()
             if continue_choice != "again":
@@ -257,9 +266,10 @@ def main():
 
         elif program_option == "most popular day":
             weekdays_dictionary = {1: "Monday", 2: "Tuesday", 3: "Wednesday", 4: "Thursday", 5: "Friday", 6: "Saturday", 7: "Sunday"}
+            # Dictionary with the number of posts that have gone up on per weekday
             weekday_count = count_dictionary(facebook_data_list, post_weekday)
             # print(weekday_count)
-
+            # Creates a list of tuples from the dictionary that reverse the values and keys of the dictionary
             inverse_dictionary_list = [(value, key) for key, value in weekday_count.items()]
             # print(inverse_dictionary_list)
             # print(max(inverse_dictionary_list)[1])
@@ -268,7 +278,7 @@ def main():
             count_of_posts_on_day = max(inverse_dictionary_list)[0]
             print("\nThe Most Popular Day To Post On Facebook Is:", weekdays_dictionary[most_popular_key])
             print("This Day Had A Total Of", count_of_posts_on_day, "Posts!")
-
+            # Gives the user the option to end the program or re run the program
             continue_choice = input("\nWould you like to run this program again or end (choices: 'again' or 'end'): ")
             continue_choice = continue_choice.lower().strip()
             if continue_choice != "again":
@@ -276,7 +286,7 @@ def main():
                 continue_program = False
         else:
             print("\nInvalid Program Option!")
-
+            # Gives the user the option to end the program or re run the program
             continue_choice = input("Would you like to run this program again or end (choices: 'again' or 'end'): ")
             continue_choice = continue_choice.lower().strip()
             if continue_choice != "again":
